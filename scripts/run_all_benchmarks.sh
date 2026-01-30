@@ -45,7 +45,7 @@ echo -e "\n[1a/10] vLLM BF16"
 docker build -t docker-vllm-bf16 -f docker/vllm-awq/Dockerfile docker/vllm-awq/
 docker run -d --gpus all --name vlm-bench-vllm-bf16 -p 28001:28001 \
     -v ~/.cache/huggingface:/root/.cache/huggingface docker-vllm-bf16
-wait_ready "http://localhost:28001/v1/models" 120
+wait_ready "http://localhost:28001/v1/models" 300
 python src/benchmark.py --config configs/bf16/benchmark_vllm_bf16.yaml
 docker stop vlm-bench-vllm-bf16 && docker rm vlm-bench-vllm-bf16
 
@@ -54,7 +54,7 @@ echo -e "\n[1b/10] SGLang BF16"
 docker build -t docker-sglang-bf16 -f docker/sglang/Dockerfile docker/sglang/
 docker run -d --gpus all --name vlm-bench-sglang-bf16 -p 28004:28004 \
     -v ~/.cache/huggingface:/root/.cache/huggingface docker-sglang-bf16
-wait_ready "http://localhost:28004/v1/models" 120
+wait_ready "http://localhost:28004/v1/models" 300
 python src/benchmark.py --config configs/bf16/benchmark_sglang_bf16.yaml
 docker stop vlm-bench-sglang-bf16 && docker rm vlm-bench-sglang-bf16
 
@@ -81,7 +81,7 @@ echo -e "\n[2a/10] vLLM FP8"
 docker build -t docker-vllm-fp8 -f docker/vllm-fp8/Dockerfile docker/vllm-fp8/
 docker run -d --gpus all --name vlm-bench-vllm-fp8 -p 28002:28002 \
     -v ~/.cache/huggingface:/root/.cache/huggingface docker-vllm-fp8
-wait_ready "http://localhost:28002/v1/models" 120
+wait_ready "http://localhost:28002/v1/models" 300
 python src/benchmark.py --config configs/fp8/benchmark_vllm_fp8.yaml
 docker stop vlm-bench-vllm-fp8 && docker rm vlm-bench-vllm-fp8
 
@@ -90,7 +90,7 @@ echo -e "\n[2b/10] SGLang FP8"
 docker build -t docker-sglang-fp8 -f docker/sglang-fp8/Dockerfile docker/sglang-fp8/
 docker run -d --gpus all --name vlm-bench-sglang-fp8 -p 28005:28005 \
     -v ~/.cache/huggingface:/root/.cache/huggingface docker-sglang-fp8
-wait_ready "http://localhost:28005/v1/models" 120
+wait_ready "http://localhost:28005/v1/models" 300
 python src/benchmark.py --config configs/fp8/benchmark_sglang_fp8.yaml
 docker stop vlm-bench-sglang-fp8 && docker rm vlm-bench-sglang-fp8
 
@@ -106,7 +106,7 @@ echo -e "\n[3a/10] vLLM AWQ 8-bit"
 docker build -t docker-vllm-awq8 -f docker/vllm-awq8/Dockerfile docker/vllm-awq8/
 docker run -d --gpus all --name vlm-bench-vllm-awq8 -p 28003:28003 \
     -v ~/.cache/huggingface:/root/.cache/huggingface docker-vllm-awq8
-wait_ready "http://localhost:28003/v1/models" 120
+wait_ready "http://localhost:28003/v1/models" 300
 python src/benchmark.py --config configs/8bit/benchmark_vllm_awq8.yaml
 docker stop vlm-bench-vllm-awq8 && docker rm vlm-bench-vllm-awq8
 
@@ -115,7 +115,7 @@ echo -e "\n[3b/10] SGLang AWQ 8-bit"
 docker build -t docker-sglang-awq8 -f docker/sglang-awq8/Dockerfile docker/sglang-awq8/
 docker run -d --gpus all --name vlm-bench-sglang-awq8 -p 28006:28006 \
     -v ~/.cache/huggingface:/root/.cache/huggingface docker-sglang-awq8
-wait_ready "http://localhost:28006/v1/models" 120
+wait_ready "http://localhost:28006/v1/models" 300
 python src/benchmark.py --config configs/8bit/benchmark_sglang_awq8.yaml
 docker stop vlm-bench-sglang-awq8 && docker rm vlm-bench-sglang-awq8
 
