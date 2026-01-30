@@ -64,8 +64,8 @@ docker build -t docker-ollama -f docker/ollama/Dockerfile docker/ollama/
 docker run -d --gpus all --name vlm-bench-ollama -p 28434:28434 \
     -v ollama_data:/root/.ollama docker-ollama
 wait_ready "http://localhost:28434/api/tags" 60
-echo "Pulling F16 model..."
-docker exec vlm-bench-ollama ollama pull qwen3-vl:4b-fp16
+echo "Pulling BF16 model..."
+docker exec vlm-bench-ollama ollama pull qwen3-vl:4b-instruct-bf16
 python src/benchmark.py --config configs/bf16/benchmark_ollama_bf16.yaml
 docker stop vlm-bench-ollama && docker rm vlm-bench-ollama
 
@@ -126,7 +126,7 @@ docker run -d --gpus all --name vlm-bench-ollama -p 28434:28434 \
     -v ollama_data:/root/.ollama docker-ollama
 wait_ready "http://localhost:28434/api/tags" 60
 echo "Pulling Q8_0 model..."
-docker exec vlm-bench-ollama ollama pull qwen3-vl:4b-q8_0
+docker exec vlm-bench-ollama ollama pull qwen3-vl:4b-instruct-q8_0
 python src/benchmark.py --config configs/8bit/benchmark_ollama_q8.yaml
 docker stop vlm-bench-ollama && docker rm vlm-bench-ollama
 

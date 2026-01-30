@@ -12,7 +12,7 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=120s --retries=3 \
 ENTRYPOINT ["vllm", "serve"]
 CMD ["Qwen/Qwen3-VL-4B-Instruct", \
      "--dtype", "bfloat16", \
-     "--gpu-memory-utilization", "0.85", \
+     "--gpu-memory-utilization", "0.75", \
      "--max-model-len", "16384", \
      "--port", "28001", \
      "--host", "0.0.0.0"]

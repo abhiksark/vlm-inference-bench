@@ -12,7 +12,7 @@ ENTRYPOINT ["vllm", "serve"]
 CMD ["cyankiwi/Qwen3-VL-4B-Instruct-AWQ-8bit", \
      "--dtype", "auto", \
      "--quantization", "awq", \
-     "--gpu-memory-utilization", "0.85", \
+     "--gpu-memory-utilization", "0.75", \
      "--max-model-len", "16384", \
      "--port", "28003", \
      "--host", "0.0.0.0"]

@@ -11,6 +11,6 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=120s --retries=3 \
 CMD ["python", "-m", "sglang.launch_server", \
      "--model-path", "cyankiwi/Qwen3-VL-4B-Instruct-AWQ-8bit", \
      "--dtype", "auto", \
-     "--mem-fraction-static", "0.85", \
+     "--mem-fraction-static", "0.75", \
      "--port", "28006", \
      "--host", "0.0.0.0"]

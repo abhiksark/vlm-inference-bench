@@ -11,6 +11,6 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=120s --retries=3 \
 CMD ["python", "-m", "sglang.launch_server", \
      "--model-path", "Qwen/Qwen3-VL-4B-Instruct-FP8", \
      "--dtype", "auto", \
-     "--mem-fraction-static", "0.85", \
+     "--mem-fraction-static", "0.75", \
      "--port", "28005", \
      "--host", "0.0.0.0"]

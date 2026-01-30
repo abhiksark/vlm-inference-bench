@@ -4,7 +4,7 @@
 backend:
   type: "ollama"
   base_url: "http://localhost:28434"
-  model: "qwen3-vl:4b-q8_0"
+  model: "qwen3-vl:4b-instruct-q8_0"
   max_new_tokens: 256
   timeout: 120
 
