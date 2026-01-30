@@ -148,17 +148,16 @@ Test configuration: 5 videos, 4 frames each, 256 max tokens, 1 warmup + 5 benchm
 
 ### Visualizations
 
-#### Throughput Comparison
-![Throughput Comparison](assets/throughput_comparison.png)
-
-#### Latency Comparison
-![Latency Comparison](assets/latency_comparison.png)
-
-#### Memory Usage
-![Memory Usage](assets/memory_comparison.png)
-
-#### Efficiency: Throughput vs Memory
-![Efficiency Scatter](assets/efficiency_scatter.png)
+<table>
+  <tr>
+    <td><img src="assets/throughput_comparison.png" alt="Throughput Comparison" width="100%"></td>
+    <td><img src="assets/latency_comparison.png" alt="Latency Comparison" width="100%"></td>
+  </tr>
+  <tr>
+    <td><img src="assets/memory_comparison.png" alt="Memory Usage" width="100%"></td>
+    <td><img src="assets/efficiency_scatter.png" alt="Efficiency Scatter" width="100%"></td>
+  </tr>
+</table>
 
 ### Key Findings
 
@@ -207,10 +206,10 @@ Test configuration: 5 videos, 4 frames each, 256 max tokens, 1 warmup + 5 benchm
 
 | Backend | Tokens/GB | Efficiency Rank |
 |---------|-----------|-----------------|
-| Ollama Q8 | 0.95 tok/s/GB | 1 (best) |
-| Ollama Q4 | 3.81 tok/s/GB | 2 |
-| vLLM FP8 | 1.38 tok/s/GB | 3 |
-| vLLM BF16 | 1.01 tok/s/GB | 4 |
+| **Ollama Q4** | 3.81 tok/s/GB | 1 (best) |
+| vLLM FP8 | 1.38 tok/s/GB | 2 |
+| vLLM BF16 | 1.01 tok/s/GB | 3 |
+| Ollama Q8 | 0.95 tok/s/GB | 4 |
 | SGLang FP8 | 0.80 tok/s/GB | 5 |
 | SGLang BF16 | 0.69 tok/s/GB | 6 |
 | Ollama F16 | 0.55 tok/s/GB | 7 |
