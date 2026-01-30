@@ -153,49 +153,83 @@ def create_overall_comparison():
 
 
 def create_efficiency_chart():
-    """Create efficiency scatter plot."""
-    fig, ax = plt.subplots(figsize=(10, 6), dpi=150)
+    """Create efficiency scatter plot with dot size proportional to precision."""
+    fig, ax = plt.subplots(figsize=(11, 7), dpi=150)
 
-    for name, throughput, latency, memory, color in data_all:
-        ax.scatter(memory, throughput, s=300, c=color, edgecolors='white', linewidth=2, zorder=3)
+    # Precision to dot size mapping (more bits = larger dot)
+    precision_sizes = {
+        '4-bit': 150,
+        '8-bit': 250,
+        'FP8': 350,
+        'BF16': 450,
+    }
+
+    # Data with precision info: (name, throughput, latency, memory, color, precision)
+    data_with_precision = [
+        ('vLLM FP8', 52.7, 2.82, 38.3, '#2ecc71', 'FP8'),
+        ('Ollama Q4', 52.6, 4.89, 13.8, '#e74c3c', '4-bit'),
+        ('vLLM BF16', 38.6, 3.66, 38.2, '#27ae60', 'BF16'),
+        ('SGLang FP8', 34.5, 5.02, 43.1, '#3498db', 'FP8'),
+        ('SGLang BF16', 29.8, 5.46, 43.1, '#2980b9', 'BF16'),
+        ('Ollama Q8', 8.0, 4.08, 8.4, '#c0392b', '8-bit'),
+        ('Ollama F16', 6.6, 4.42, 12.1, '#e67e22', 'BF16'),
+    ]
+
+    # Plot each point
+    for name, throughput, latency, memory, color, precision in data_with_precision:
+        size = precision_sizes[precision]
+        ax.scatter(memory, throughput, s=size, c=color, edgecolors='white',
+                   linewidth=2, zorder=3, alpha=0.85)
 
         # Position labels to avoid overlap
         if name == 'Ollama Q4':
-            ax.annotate(name, (memory, throughput), xytext=(-60, 10), textcoords='offset points',
+            ax.annotate(name, (memory, throughput), xytext=(-65, 5), textcoords='offset points',
                         fontsize=10, fontweight='bold')
         elif name == 'vLLM FP8':
-            ax.annotate(name, (memory, throughput), xytext=(10, 5), textcoords='offset points',
+            ax.annotate(name, (memory, throughput), xytext=(12, 5), textcoords='offset points',
                         fontsize=10, fontweight='bold')
         elif name == 'vLLM BF16':
-            ax.annotate(name, (memory, throughput), xytext=(10, -5), textcoords='offset points',
+            ax.annotate(name, (memory, throughput), xytext=(12, -5), textcoords='offset points',
                         fontsize=10, fontweight='bold')
-        elif name in ['SGLang FP8', 'SGLang BF16']:
-            offset = 5 if 'FP8' in name else -15
-            ax.annotate(name, (memory, throughput), xytext=(10, offset), textcoords='offset points',
+        elif name == 'SGLang FP8':
+            ax.annotate(name, (memory, throughput), xytext=(12, 5), textcoords='offset points',
+                        fontsize=10, fontweight='bold')
+        elif name == 'SGLang BF16':
+            ax.annotate(name, (memory, throughput), xytext=(12, -12), textcoords='offset points',
                         fontsize=10, fontweight='bold')
         elif name == 'Ollama Q8':
-            ax.annotate(name, (memory, throughput), xytext=(10, 5), textcoords='offset points',
+            ax.annotate(name, (memory, throughput), xytext=(12, 3), textcoords='offset points',
                         fontsize=10, fontweight='bold')
         elif name == 'Ollama F16':
-            ax.annotate(name, (memory, throughput), xytext=(10, -10), textcoords='offset points',
+            ax.annotate(name, (memory, throughput), xytext=(12, -8), textcoords='offset points',
                         fontsize=10, fontweight='bold')
 
     ax.set_xlabel('Peak GPU Memory (GB)', fontsize=12)
     ax.set_ylabel('Tokens per Second', fontsize=12)
-    ax.set_title('Efficiency: Throughput vs Memory', fontsize=14, fontweight='bold')
+    ax.set_title('Efficiency: Throughput vs Memory\n(dot size = precision bits)', fontsize=14, fontweight='bold')
 
     # Quadrant lines
     ax.axhline(y=30, color='gray', linestyle='--', alpha=0.4)
     ax.axvline(x=25, color='gray', linestyle='--', alpha=0.4)
 
     # Quadrant labels
-    ax.text(8, 57, 'BEST\nHigh speed, Low memory', fontsize=10, ha='center',
+    ax.text(8, 60, 'BEST\nHigh speed, Low memory', fontsize=10, ha='center',
             color='#27ae60', fontweight='bold', alpha=0.8)
-    ax.text(42, 3, 'WORST\nLow speed, High memory', fontsize=10, ha='center',
-            color='#e74c3c', fontweight='bold', alpha=0.8)
+    ax.text(35, 15, 'WORST\nLow speed\nHigh memory', fontsize=10, ha='center',
+            color='#e74c3c', fontweight='bold', alpha=0.6)
+
+    # Add precision size legend
+    legend_elements = [
+        plt.scatter([], [], s=precision_sizes['BF16'], c='gray', alpha=0.6, label='BF16 (16-bit)'),
+        plt.scatter([], [], s=precision_sizes['FP8'], c='gray', alpha=0.6, label='FP8 (8-bit)'),
+        plt.scatter([], [], s=precision_sizes['8-bit'], c='gray', alpha=0.6, label='Q8 (8-bit)'),
+        plt.scatter([], [], s=precision_sizes['4-bit'], c='gray', alpha=0.6, label='Q4 (4-bit)'),
+    ]
+    ax.legend(handles=legend_elements, loc='lower right', title='Dot Size = Precision',
+              fontsize=9, title_fontsize=10, framealpha=0.95)
 
     ax.set_xlim(0, 50)
-    ax.set_ylim(0, 62)
+    ax.set_ylim(0, 65)
     ax.grid(True, alpha=0.3)
 
     plt.tight_layout()
