@@ -6,95 +6,96 @@ import numpy as np
 
 # Benchmark data by precision category
 data_fp8 = {
-    'vLLM FP8': {'throughput': 52.7, 'latency': 2819, 'memory': 38.3},
-    'SGLang FP8': {'throughput': 34.5, 'latency': 5017, 'memory': 43.1},
+    'vLLM': {'throughput': 52.7, 'latency': 2.82, 'memory': 38.3},
+    'SGLang': {'throughput': 34.5, 'latency': 5.02, 'memory': 43.1},
 }
 
 data_bf16 = {
-    'vLLM BF16': {'throughput': 38.6, 'latency': 3658, 'memory': 38.2},
-    'SGLang BF16': {'throughput': 29.8, 'latency': 5458, 'memory': 43.1},
-    'Ollama F16': {'throughput': 6.6, 'latency': 4423, 'memory': 12.1},
+    'vLLM': {'throughput': 38.6, 'latency': 3.66, 'memory': 38.2},
+    'SGLang': {'throughput': 29.8, 'latency': 5.46, 'memory': 43.1},
+    'Ollama F16': {'throughput': 6.6, 'latency': 4.42, 'memory': 12.1},
 }
 
-data_8bit = {
-    'Ollama Q8': {'throughput': 8.0, 'latency': 4081, 'memory': 8.4},
-}
-
-data_4bit = {
-    'Ollama Q4': {'throughput': 52.6, 'latency': 4891, 'memory': 13.8},
-}
-
-# All data combined
-data_all = {
-    'vLLM FP8': {'throughput': 52.7, 'latency': 2819, 'memory': 38.3, 'precision': 'FP8'},
-    'Ollama Q4': {'throughput': 52.6, 'latency': 4891, 'memory': 13.8, 'precision': '4-bit'},
-    'vLLM BF16': {'throughput': 38.6, 'latency': 3658, 'memory': 38.2, 'precision': 'BF16'},
-    'SGLang FP8': {'throughput': 34.5, 'latency': 5017, 'memory': 43.1, 'precision': 'FP8'},
-    'SGLang BF16': {'throughput': 29.8, 'latency': 5458, 'memory': 43.1, 'precision': 'BF16'},
-    'Ollama Q8': {'throughput': 8.0, 'latency': 4081, 'memory': 8.4, 'precision': '8-bit'},
-    'Ollama F16': {'throughput': 6.6, 'latency': 4423, 'memory': 12.1, 'precision': 'BF16'},
-}
-
-# Color scheme by backend
-colors = {
-    'vLLM FP8': '#2ecc71',
-    'vLLM BF16': '#27ae60',
-    'SGLang FP8': '#3498db',
-    'SGLang BF16': '#2980b9',
-    'Ollama Q4': '#e74c3c',
-    'Ollama Q8': '#c0392b',
-    'Ollama F16': '#e67e22',
-}
+# All data combined for overall chart
+data_all = [
+    ('vLLM FP8', 52.7, 2.82, 38.3, '#2ecc71'),
+    ('Ollama Q4', 52.6, 4.89, 13.8, '#e74c3c'),
+    ('vLLM BF16', 38.6, 3.66, 38.2, '#27ae60'),
+    ('SGLang FP8', 34.5, 5.02, 43.1, '#3498db'),
+    ('SGLang BF16', 29.8, 5.46, 43.1, '#2980b9'),
+    ('Ollama Q8', 8.0, 4.08, 8.4, '#c0392b'),
+    ('Ollama F16', 6.6, 4.42, 12.1, '#e67e22'),
+]
 
 plt.style.use('seaborn-v0_8-whitegrid')
+plt.rcParams['font.size'] = 11
 
 
-def create_precision_chart(data, title, filename, figsize=(8, 4)):
-    """Create a combined throughput + latency chart for a precision category."""
+def create_comparison_chart(data, title, filename, winner_label=None):
+    """Create a comparison chart for a precision category."""
     backends = list(data.keys())
     throughputs = [data[b]['throughput'] for b in backends]
-    latencies = [data[b]['latency'] / 1000 for b in backends]
+    latencies = [data[b]['latency'] for b in backends]
     memories = [data[b]['memory'] for b in backends]
-    bar_colors = [colors[b] for b in backends]
 
-    fig, axes = plt.subplots(1, 3, figsize=(figsize[0] * 1.5, figsize[1]), dpi=150)
+    # Colors: green for vLLM (winner), blue for SGLang, orange for Ollama
+    colors = []
+    for b in backends:
+        if 'vLLM' in b:
+            colors.append('#2ecc71')
+        elif 'SGLang' in b:
+            colors.append('#3498db')
+        else:
+            colors.append('#e67e22')
+
+    fig, axes = plt.subplots(1, 3, figsize=(12, 3.5), dpi=150)
+
+    # Sort by throughput for display
+    sorted_idx = np.argsort(throughputs)[::-1]
+    sorted_backends = [backends[i] for i in sorted_idx]
+    sorted_throughputs = [throughputs[i] for i in sorted_idx]
+    sorted_latencies = [latencies[i] for i in sorted_idx]
+    sorted_memories = [memories[i] for i in sorted_idx]
+    sorted_colors = [colors[i] for i in sorted_idx]
 
     # Throughput chart
     ax1 = axes[0]
-    bars1 = ax1.barh(backends, throughputs, color=bar_colors, edgecolor='white')
-    for bar, val in zip(bars1, throughputs):
-        ax1.text(val + 0.5, bar.get_y() + bar.get_height()/2, f'{val:.1f}',
-                 va='center', fontsize=10, fontweight='bold')
-    ax1.set_xlabel('Tokens/s', fontsize=11)
-    ax1.set_title('Throughput (↑ better)', fontsize=12, fontweight='bold')
-    ax1.set_xlim(0, max(throughputs) * 1.2)
+    bars1 = ax1.barh(sorted_backends, sorted_throughputs, color=sorted_colors, edgecolor='white', height=0.6)
+    for bar, val in zip(bars1, sorted_throughputs):
+        ax1.text(val + 1, bar.get_y() + bar.get_height()/2, f'{val:.1f}',
+                 va='center', fontsize=11, fontweight='bold')
+    ax1.set_xlabel('Tokens/s')
+    ax1.set_title('Throughput (↑ better)', fontweight='bold')
+    ax1.set_xlim(0, max(sorted_throughputs) * 1.25)
     ax1.invert_yaxis()
 
     # Latency chart
     ax2 = axes[1]
-    bars2 = ax2.barh(backends, latencies, color=bar_colors, edgecolor='white')
-    for bar, val in zip(bars2, latencies):
+    bars2 = ax2.barh(sorted_backends, sorted_latencies, color=sorted_colors, edgecolor='white', height=0.6)
+    for bar, val in zip(bars2, sorted_latencies):
         ax2.text(val + 0.1, bar.get_y() + bar.get_height()/2, f'{val:.1f}s',
-                 va='center', fontsize=10, fontweight='bold')
-    ax2.set_xlabel('Seconds', fontsize=11)
-    ax2.set_title('Latency (↓ better)', fontsize=12, fontweight='bold')
-    ax2.set_xlim(0, max(latencies) * 1.2)
+                 va='center', fontsize=11, fontweight='bold')
+    ax2.set_xlabel('Seconds')
+    ax2.set_title('Latency (↓ better)', fontweight='bold')
+    ax2.set_xlim(0, max(sorted_latencies) * 1.25)
     ax2.invert_yaxis()
-    ax2.set_yticklabels([])
 
     # Memory chart
     ax3 = axes[2]
-    bars3 = ax3.barh(backends, memories, color=bar_colors, edgecolor='white')
-    for bar, val in zip(bars3, memories):
-        ax3.text(val + 0.5, bar.get_y() + bar.get_height()/2, f'{val:.1f}GB',
-                 va='center', fontsize=10, fontweight='bold')
-    ax3.set_xlabel('GB', fontsize=11)
-    ax3.set_title('Memory (↓ better)', fontsize=12, fontweight='bold')
-    ax3.set_xlim(0, max(memories) * 1.2)
+    bars3 = ax3.barh(sorted_backends, sorted_memories, color=sorted_colors, edgecolor='white', height=0.6)
+    for bar, val in zip(bars3, sorted_memories):
+        ax3.text(val + 1, bar.get_y() + bar.get_height()/2, f'{val:.0f}GB',
+                 va='center', fontsize=11, fontweight='bold')
+    ax3.set_xlabel('GB')
+    ax3.set_title('Memory (↓ better)', fontweight='bold')
+    ax3.set_xlim(0, max(sorted_memories) * 1.25)
     ax3.invert_yaxis()
-    ax3.set_yticklabels([])
 
-    fig.suptitle(title, fontsize=14, fontweight='bold', y=1.02)
+    if winner_label:
+        fig.suptitle(f'{title}\n{winner_label}', fontsize=13, fontweight='bold', y=1.05)
+    else:
+        fig.suptitle(title, fontsize=13, fontweight='bold', y=1.02)
+
     plt.tight_layout()
     plt.savefig(f'assets/{filename}', bbox_inches='tight', facecolor='white')
     plt.close()
@@ -103,49 +104,46 @@ def create_precision_chart(data, title, filename, figsize=(8, 4)):
 
 def create_overall_comparison():
     """Create overall comparison chart sorted by throughput."""
-    # Sort by throughput
-    sorted_backends = sorted(data_all.keys(), key=lambda x: data_all[x]['throughput'], reverse=True)
-    throughputs = [data_all[b]['throughput'] for b in sorted_backends]
-    latencies = [data_all[b]['latency'] / 1000 for b in sorted_backends]
-    memories = [data_all[b]['memory'] for b in sorted_backends]
-    bar_colors = [colors[b] for b in sorted_backends]
-
     fig, axes = plt.subplots(1, 3, figsize=(14, 5), dpi=150)
+
+    backends = [d[0] for d in data_all]
+    throughputs = [d[1] for d in data_all]
+    latencies = [d[2] for d in data_all]
+    memories = [d[3] for d in data_all]
+    colors = [d[4] for d in data_all]
 
     # Throughput
     ax1 = axes[0]
-    bars1 = ax1.barh(sorted_backends, throughputs, color=bar_colors, edgecolor='white')
+    bars1 = ax1.barh(backends, throughputs, color=colors, edgecolor='white', height=0.7)
     for bar, val in zip(bars1, throughputs):
-        ax1.text(val + 0.5, bar.get_y() + bar.get_height()/2, f'{val:.1f}',
-                 va='center', fontsize=9, fontweight='bold')
-    ax1.set_xlabel('Tokens/s', fontsize=11)
-    ax1.set_title('Throughput (↑ better)', fontsize=12, fontweight='bold')
-    ax1.set_xlim(0, max(throughputs) * 1.15)
+        ax1.text(val + 1, bar.get_y() + bar.get_height()/2, f'{val:.1f}',
+                 va='center', fontsize=10, fontweight='bold')
+    ax1.set_xlabel('Tokens/s')
+    ax1.set_title('Throughput (↑ better)', fontweight='bold')
+    ax1.set_xlim(0, max(throughputs) * 1.2)
     ax1.invert_yaxis()
 
     # Latency
     ax2 = axes[1]
-    bars2 = ax2.barh(sorted_backends, latencies, color=bar_colors, edgecolor='white')
+    bars2 = ax2.barh(backends, latencies, color=colors, edgecolor='white', height=0.7)
     for bar, val in zip(bars2, latencies):
         ax2.text(val + 0.1, bar.get_y() + bar.get_height()/2, f'{val:.1f}s',
-                 va='center', fontsize=9, fontweight='bold')
-    ax2.set_xlabel('Seconds', fontsize=11)
-    ax2.set_title('Latency (↓ better)', fontsize=12, fontweight='bold')
-    ax2.set_xlim(0, max(latencies) * 1.15)
+                 va='center', fontsize=10, fontweight='bold')
+    ax2.set_xlabel('Seconds')
+    ax2.set_title('Latency (↓ better)', fontweight='bold')
+    ax2.set_xlim(0, max(latencies) * 1.2)
     ax2.invert_yaxis()
-    ax2.set_yticklabels([])
 
     # Memory
     ax3 = axes[2]
-    bars3 = ax3.barh(sorted_backends, memories, color=bar_colors, edgecolor='white')
+    bars3 = ax3.barh(backends, memories, color=colors, edgecolor='white', height=0.7)
     for bar, val in zip(bars3, memories):
-        ax3.text(val + 0.5, bar.get_y() + bar.get_height()/2, f'{val:.1f}GB',
-                 va='center', fontsize=9, fontweight='bold')
-    ax3.set_xlabel('GB', fontsize=11)
-    ax3.set_title('Memory (↓ better)', fontsize=12, fontweight='bold')
-    ax3.set_xlim(0, max(memories) * 1.15)
+        ax3.text(val + 1, bar.get_y() + bar.get_height()/2, f'{val:.0f}GB',
+                 va='center', fontsize=10, fontweight='bold')
+    ax3.set_xlabel('GB')
+    ax3.set_title('Memory (↓ better)', fontweight='bold')
+    ax3.set_xlim(0, max(memories) * 1.2)
     ax3.invert_yaxis()
-    ax3.set_yticklabels([])
 
     fig.suptitle('Overall Comparison (sorted by throughput)', fontsize=14, fontweight='bold', y=1.02)
     plt.tight_layout()
@@ -158,31 +156,47 @@ def create_efficiency_chart():
     """Create efficiency scatter plot."""
     fig, ax = plt.subplots(figsize=(10, 6), dpi=150)
 
-    for backend, d in data_all.items():
-        ax.scatter(d['memory'], d['throughput'], s=200, c=colors[backend],
-                   label=backend, edgecolors='white', linewidth=1.5, zorder=3)
+    for name, throughput, latency, memory, color in data_all:
+        ax.scatter(memory, throughput, s=300, c=color, edgecolors='white', linewidth=2, zorder=3)
 
-    # Add labels
-    for backend, d in data_all.items():
-        offset_x = 1 if d['memory'] < 30 else -8
-        offset_y = 1.5 if d['throughput'] > 20 else -2
-        ax.annotate(backend, (d['memory'], d['throughput']),
-                    xytext=(offset_x, offset_y), textcoords='offset points',
-                    fontsize=9, fontweight='bold')
+        # Position labels to avoid overlap
+        if name == 'Ollama Q4':
+            ax.annotate(name, (memory, throughput), xytext=(-60, 10), textcoords='offset points',
+                        fontsize=10, fontweight='bold')
+        elif name == 'vLLM FP8':
+            ax.annotate(name, (memory, throughput), xytext=(10, 5), textcoords='offset points',
+                        fontsize=10, fontweight='bold')
+        elif name == 'vLLM BF16':
+            ax.annotate(name, (memory, throughput), xytext=(10, -5), textcoords='offset points',
+                        fontsize=10, fontweight='bold')
+        elif name in ['SGLang FP8', 'SGLang BF16']:
+            offset = 5 if 'FP8' in name else -15
+            ax.annotate(name, (memory, throughput), xytext=(10, offset), textcoords='offset points',
+                        fontsize=10, fontweight='bold')
+        elif name == 'Ollama Q8':
+            ax.annotate(name, (memory, throughput), xytext=(10, 5), textcoords='offset points',
+                        fontsize=10, fontweight='bold')
+        elif name == 'Ollama F16':
+            ax.annotate(name, (memory, throughput), xytext=(10, -10), textcoords='offset points',
+                        fontsize=10, fontweight='bold')
 
     ax.set_xlabel('Peak GPU Memory (GB)', fontsize=12)
     ax.set_ylabel('Tokens per Second', fontsize=12)
     ax.set_title('Efficiency: Throughput vs Memory', fontsize=14, fontweight='bold')
 
-    # Quadrant annotations
-    ax.axhline(y=30, color='gray', linestyle='--', alpha=0.3)
-    ax.axvline(x=25, color='gray', linestyle='--', alpha=0.3)
-    ax.text(10, 55, 'Best\n(High throughput\nLow memory)', fontsize=9, alpha=0.6, ha='center')
-    ax.text(40, 5, 'Worst\n(Low throughput\nHigh memory)', fontsize=9, alpha=0.6, ha='center')
+    # Quadrant lines
+    ax.axhline(y=30, color='gray', linestyle='--', alpha=0.4)
+    ax.axvline(x=25, color='gray', linestyle='--', alpha=0.4)
+
+    # Quadrant labels
+    ax.text(8, 57, 'BEST\nHigh speed, Low memory', fontsize=10, ha='center',
+            color='#27ae60', fontweight='bold', alpha=0.8)
+    ax.text(42, 3, 'WORST\nLow speed, High memory', fontsize=10, ha='center',
+            color='#e74c3c', fontweight='bold', alpha=0.8)
 
     ax.set_xlim(0, 50)
-    ax.set_ylim(0, 60)
-    ax.legend(loc='center right', fontsize=9)
+    ax.set_ylim(0, 62)
+    ax.grid(True, alpha=0.3)
 
     plt.tight_layout()
     plt.savefig('assets/efficiency_scatter.png', bbox_inches='tight', facecolor='white')
@@ -191,11 +205,11 @@ def create_efficiency_chart():
 
 
 if __name__ == '__main__':
-    # Per-precision charts
-    create_precision_chart(data_fp8, 'FP8 Precision: vLLM vs SGLang', 'fp8_comparison.png')
-    create_precision_chart(data_bf16, 'BF16 Precision: vLLM vs SGLang vs Ollama', 'bf16_comparison.png')
-    create_precision_chart(data_8bit, '8-bit Precision: Ollama Q8', '8bit_comparison.png', figsize=(6, 2))
-    create_precision_chart(data_4bit, '4-bit Precision: Ollama Q4', '4bit_comparison.png', figsize=(6, 2))
+    # Per-precision comparison charts (only where there's actual competition)
+    create_comparison_chart(data_fp8, 'FP8 Precision', 'fp8_comparison.png',
+                           'vLLM wins: 53% faster throughput, 44% lower latency')
+    create_comparison_chart(data_bf16, 'BF16 Precision', 'bf16_comparison.png',
+                           'vLLM wins: 30% faster than SGLang, 6x faster than Ollama')
 
     # Overall charts
     create_overall_comparison()
