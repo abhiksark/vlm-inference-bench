@@ -188,7 +188,6 @@ Compare results: `python src/compare.py results/*.json`
 
 | Issue | Solution |
 |-------|----------|
-| Port in use | `sudo systemctl stop ollama` |
 | GPU OOM | Run [cleanup_gpu.sh](scripts/cleanup_gpu.sh) |
 | Container logs | `docker logs vlm-bench-vllm-awq` |
 
