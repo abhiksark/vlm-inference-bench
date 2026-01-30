@@ -161,16 +161,25 @@ Test configuration: 5 videos, 4 frames each, 256 max tokens, 1 warmup + 5 benchm
 
 ### Visualizations
 
-<table>
-  <tr>
-    <td><img src="assets/throughput_comparison.png" alt="Throughput Comparison" width="100%"></td>
-    <td><img src="assets/latency_comparison.png" alt="Latency Comparison" width="100%"></td>
-  </tr>
-  <tr>
-    <td><img src="assets/memory_comparison.png" alt="Memory Usage" width="100%"></td>
-    <td><img src="assets/efficiency_scatter.png" alt="Efficiency Scatter" width="100%"></td>
-  </tr>
-</table>
+#### Overall Comparison
+![Overall Comparison](assets/overall_comparison.png)
+
+#### By Precision Category
+
+**FP8: vLLM wins (53% faster)**
+![FP8 Comparison](assets/fp8_comparison.png)
+
+**BF16: vLLM wins (30% faster)**
+![BF16 Comparison](assets/bf16_comparison.png)
+
+**8-bit: Ollama Q8**
+![8-bit Comparison](assets/8bit_comparison.png)
+
+**4-bit: Ollama Q4 (best efficiency)**
+![4-bit Comparison](assets/4bit_comparison.png)
+
+#### Efficiency: Throughput vs Memory
+![Efficiency Scatter](assets/efficiency_scatter.png)
 
 ### Key Findings
 
