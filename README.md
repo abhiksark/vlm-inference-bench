@@ -7,6 +7,7 @@ Benchmarking framework for Vision-Language Models (VLMs) with multiple inference
 - [Overview](#overview)
 - [Project Structure](#project-structure)
 - [Quick Start](#quick-start)
+- [Methodology](#methodology)
 - [Backends](#backends)
 - [Configuration](#configuration)
 - [Results](#results)
@@ -77,6 +78,37 @@ python src/benchmark.py --config configs/benchmark_vllm.yaml
 docker stop vlm-bench-vllm-awq && docker rm vlm-bench-vllm-awq
 ```
 
+## Methodology
+
+### Benchmark Process
+
+1. **Warmup** - 1 inference run to populate caches (excluded from results)
+2. **Benchmark** - 5 runs per video, metrics averaged
+3. **Metrics** - Latency (p50/p90/p99), throughput (tokens/s), GPU memory
+
+### Test Configuration
+
+| Parameter | Value | Rationale |
+|-----------|-------|-----------|
+| Videos | 5 | Quick iteration while statistically meaningful |
+| Frames/video | 4 | Balance between context and speed |
+| Temperature | 0.0 | Deterministic outputs for reproducibility |
+| Max tokens | 512 | Sufficient for video descriptions |
+
+### Hardware
+
+- **GPU**: NVIDIA RTX A6000 (48 GB VRAM)
+- **CUDA**: 12.1
+- **Driver**: 535.x
+
+### Why These Backends?
+
+| Backend | Why Included |
+|---------|--------------|
+| [vLLM](https://docs.vllm.ai/) | Industry standard, best throughput with [PagedAttention](https://arxiv.org/abs/2309.06180) |
+| [SGLang](https://github.com/sgl-project/sglang) | Emerging alternative with [RadixAttention](https://arxiv.org/abs/2312.07104) |
+| [Ollama](https://ollama.ai/) | Lightweight option using [GGUF quantization](https://github.com/ggerganov/ggml) |
+
 ## Backends
 
 | Backend | Port | Config | Memory |
@@ -130,6 +162,25 @@ Output: `results/*.json` and `results/*.csv`
 | vLLM (warm) | 2,787 ms | 59.5 | 43.4 GB |
 | SGLang | 3,100 ms | 55.2 | 40.1 GB |
 | Ollama | 5,093 ms | 50.3 | 7.1 GB |
+
+### Key Findings
+
+**vLLM is fastest** (~30% faster than SGLang)
+- [Prefix caching](https://docs.vllm.ai/en/latest/automatic_prefix_caching/apc.html) reuses KV cache across requests
+- [Chunked prefill](https://docs.vllm.ai/en/latest/models/performance.html) overlaps computation with memory ops
+- Warm runs 36% faster than cold (2,787ms vs 4,339ms)
+
+**Ollama is most memory efficient** (6x less than vLLM)
+- [GGUF Q4_K_M quantization](https://huggingface.co/docs/hub/gguf) reduces 4B params to ~2.5 GB
+- Tradeoff: 2x slower than vLLM
+
+**Recommendations**
+
+| Use Case | Backend | Why |
+|----------|---------|-----|
+| Production (speed) | vLLM | Lowest latency, best throughput |
+| Memory constrained | Ollama | 7 GB vs 43 GB, runs on consumer GPUs |
+| Development | SGLang | Good balance, easy debugging |
 
 Compare results: `python src/compare.py results/*.json`
 
