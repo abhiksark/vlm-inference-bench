@@ -40,9 +40,9 @@ Benchmark video understanding capabilities across inference backends and quantiz
 **Model**: [Qwen3-VL-4B-Instruct](https://huggingface.co/Qwen/Qwen3-VL-4B-Instruct) (4 billion parameters)
 
 > **Key Results** (RTX A6000):
-> - **Fastest**: vLLM FP8 at 52.7 tokens/s (2.8s latency)
-> - **Most efficient**: Ollama Q4 at 52.6 tokens/s using only 13.8 GB VRAM
-> - **Lowest memory**: Ollama Q8 at 8.4 GB VRAM
+> - **Best performance**: vLLM FP8 — 52.7 tok/s, 2.8s latency (42% faster than Ollama)
+> - **Best efficiency**: Ollama Q4 — 3.81 tok/s/GB (2.8x more efficient than vLLM)
+> - **Lowest memory**: Ollama Q8 — 8.4 GB VRAM
 
 ---
 
@@ -161,20 +161,20 @@ Test configuration: 5 videos, 4 frames each, 256 max tokens, 1 warmup + 5 benchm
 
 ### Key Findings
 
-#### vLLM FP8 is the fastest
+#### vLLM FP8 is the most performant
 
-- **52.7 tokens/second** with 2,819ms P50 latency
-- 37% faster than vLLM BF16 (38.6 tok/s)
-- 53% faster than SGLang FP8 (34.5 tok/s)
-- FP8 W8A16 quantization on Ampere GPUs provides speed boost without accuracy loss
-- [Prefix caching](https://docs.vllm.ai/en/latest/automatic_prefix_caching/apc.html) and [chunked prefill](https://docs.vllm.ai/en/latest/models/performance.html) contribute to performance
+- **52.7 tokens/second** with **2,819ms latency** (fastest overall)
+- 42% lower latency than Ollama Q4 (2.8s vs 4.9s)
+- 37% higher throughput than vLLM BF16 (38.6 tok/s)
+- 53% higher throughput than SGLang FP8 (34.5 tok/s)
+- [Prefix caching](https://docs.vllm.ai/en/latest/automatic_prefix_caching/apc.html) and [chunked prefill](https://docs.vllm.ai/en/latest/models/performance.html) drive performance
 
-#### Ollama Q4 achieves best memory efficiency
+#### Ollama Q4 is the most efficient
 
-- **52.6 tokens/second** with only **13.8 GB memory** (64% less than vLLM FP8)
-- Matches vLLM FP8 throughput at fraction of memory cost
+- **3.81 tok/s/GB** efficiency (2.8x better than vLLM FP8's 1.38)
+- 52.6 tok/s throughput using only **13.8 GB memory** (64% less than vLLM)
 - [GGUF Q4_K_M](https://huggingface.co/docs/hub/gguf) quantization compresses 4B params effectively
-- 73% latency tradeoff (4,891ms vs 2,819ms)
+- Tradeoff: 73% higher latency (4.9s vs 2.8s)
 
 #### vLLM consistently outperforms SGLang
 
@@ -202,17 +202,22 @@ Test configuration: 5 videos, 4 frames each, 256 max tokens, 1 warmup + 5 benchm
 | **Minimum memory** | Ollama Q8 | 8.4 GB, fits on 10 GB GPUs |
 | **Development** | vLLM BF16 | Good performance, no quantization artifacts |
 
-### Cost-Performance Analysis
+### Performance vs Efficiency
 
-| Backend | Tokens/GB | Efficiency Rank |
-|---------|-----------|-----------------|
-| **Ollama Q4** | 3.81 tok/s/GB | 1 (best) |
-| vLLM FP8 | 1.38 tok/s/GB | 2 |
-| vLLM BF16 | 1.01 tok/s/GB | 3 |
-| Ollama Q8 | 0.95 tok/s/GB | 4 |
-| SGLang FP8 | 0.80 tok/s/GB | 5 |
-| SGLang BF16 | 0.69 tok/s/GB | 6 |
-| Ollama F16 | 0.55 tok/s/GB | 7 |
+**Performance** = raw speed (tokens/s, latency) → **vLLM FP8 wins**
+**Efficiency** = throughput per memory (tokens/s/GB) → **Ollama Q4 wins**
+
+| Backend | Throughput | Latency | Memory | Efficiency |
+|---------|------------|---------|--------|------------|
+| **vLLM FP8** | 52.7 tok/s | 2.8s | 38.3 GB | 1.38 tok/s/GB |
+| Ollama Q4 | 52.6 tok/s | 4.9s | 13.8 GB | **3.81 tok/s/GB** |
+| vLLM BF16 | 38.6 tok/s | 3.7s | 38.2 GB | 1.01 tok/s/GB |
+| SGLang FP8 | 34.5 tok/s | 5.0s | 43.1 GB | 0.80 tok/s/GB |
+| SGLang BF16 | 29.8 tok/s | 5.5s | 43.1 GB | 0.69 tok/s/GB |
+| Ollama Q8 | 8.0 tok/s | 4.1s | 8.4 GB | 0.95 tok/s/GB |
+| Ollama F16 | 6.6 tok/s | 4.4s | 12.1 GB | 0.55 tok/s/GB |
+
+> Sorted by throughput (performance). vLLM FP8 delivers 52.7 tok/s at 2.8s latency - 42% faster than Ollama Q4's 4.9s latency despite similar throughput.
 
 Compare results: `python src/compare.py results/*.json`
 
