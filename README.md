@@ -1,6 +1,19 @@
-# VLM Benchmark Suite
+<p align="center">
+  <img src="banner.png" alt="VLM Benchmark Suite" width="100%">
+</p>
 
-Benchmarking framework for Vision-Language Models (VLMs) with multiple inference backends.
+<h1 align="center">VLM Benchmark Suite</h1>
+<p align="center">
+  <strong>Benchmarking Vision-Language Models across inference backends</strong>
+</p>
+<p align="center">
+  <img src="https://img.shields.io/badge/python-3.10+-blue.svg" alt="Python">
+  <img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License">
+  <img src="https://img.shields.io/badge/NVIDIA-CUDA-green.svg" alt="NVIDIA">
+  <img src="https://img.shields.io/badge/Model-Qwen3--VL--4B-purple.svg" alt="Model">
+</p>
+
+---
 
 ## Table of Contents
 
@@ -11,6 +24,8 @@ Benchmarking framework for Vision-Language Models (VLMs) with multiple inference
 - [Backends](#backends)
 - [Configuration](#configuration)
 - [Troubleshooting](#troubleshooting)
+
+---
 
 ## Overview
 
@@ -24,10 +39,12 @@ Benchmark video understanding capabilities across inference backends and quantiz
 
 **Model**: [Qwen3-VL-4B-Instruct](https://huggingface.co/Qwen/Qwen3-VL-4B-Instruct) (4 billion parameters)
 
-**Key Results** (RTX A6000):
-- **Fastest**: vLLM FP8 at 52.7 tokens/s (2.8s latency)
-- **Most efficient**: Ollama Q4 at 52.6 tokens/s using only 13.8 GB VRAM
-- **Lowest memory**: Ollama Q8 at 8.4 GB VRAM
+> **Key Results** (RTX A6000):
+> - **Fastest**: vLLM FP8 at 52.7 tokens/s (2.8s latency)
+> - **Most efficient**: Ollama Q4 at 52.6 tokens/s using only 13.8 GB VRAM
+> - **Lowest memory**: Ollama Q8 at 8.4 GB VRAM
+
+---
 
 ## Quick Start
 
@@ -61,6 +78,8 @@ python src/benchmark.py --config configs/benchmark_vllm.yaml
 
 docker stop vlm-bench-vllm-awq && docker rm vlm-bench-vllm-awq
 ```
+
+---
 
 ## Results
 
@@ -198,6 +217,8 @@ Test configuration: 5 videos, 4 frames each, 256 max tokens, 1 warmup + 5 benchm
 
 Compare results: `python src/compare.py results/*.json`
 
+---
+
 ## Methodology
 
 ### Benchmark Process
@@ -231,6 +252,8 @@ Compare results: `python src/compare.py results/*.json`
 | [vLLM](https://docs.vllm.ai/) | Industry standard, best throughput with [PagedAttention](https://arxiv.org/abs/2309.06180) |
 | [SGLang](https://github.com/sgl-project/sglang) | Emerging alternative with [RadixAttention](https://arxiv.org/abs/2312.07104) |
 | [Ollama](https://ollama.ai/) | Lightweight option using [GGUF quantization](https://github.com/ggerganov/ggml) |
+
+---
 
 ## Backends
 
@@ -279,6 +302,8 @@ benchmark:
 
 See [configs/backends/](configs/backends/) for backend-specific options.
 
+---
+
 ## Troubleshooting
 
 | Issue | Solution |
@@ -290,6 +315,8 @@ See [configs/backends/](configs/backends/) for backend-specific options.
 | Container logs | `docker logs vlm-bench-<backend>` |
 | GPU memory contention | Stop competing containers: `docker ps` and `docker stop <id>` |
 | Benchmark hangs | Check if endpoint is ready: `curl http://localhost:<port>/v1/models` |
+
+---
 
 ## License
 
