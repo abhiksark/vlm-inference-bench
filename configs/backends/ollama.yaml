@@ -1,0 +1,14 @@
+# configs/backends/ollama.yaml
+# Ollama backend for easy local inference
+
+backend:
+  type: ollama
+  base_url: "http://localhost:11434"
+  model: "qwen3-vl:4b"
+  max_new_tokens: 256
+  timeout: 120.0
+  options: {}
+
+# Setup commands:
+# ollama pull qwen3-vl:4b
+# ollama serve  # or it runs as a service

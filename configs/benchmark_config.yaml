@@ -1,0 +1,27 @@
+# configs/benchmark_config.yaml
+"""Benchmark configuration for Qwen3-4B VLM."""
+
+model:
+  name: "Qwen/Qwen3-VL-4B-Instruct"
+  device: "cuda"
+  dtype: "bfloat16"  # Options: float16, bfloat16, float32
+  max_new_tokens: 256
+
+data:
+  video_dir: "video"
+  sample_size: null  # null for all videos, or int for subset
+  frame_sampling: "uniform"  # uniform, keyframe, fps_based
+  frames_per_video: 8  # Number of frames to sample per video
+  target_fps: 1  # For fps_based sampling
+
+benchmark:
+  warmup_runs: 3
+  num_runs: 10
+  batch_sizes: [1, 2, 4]
+  measure_memory: true
+  measure_gpu_util: true
+  save_individual_results: true
+
+output:
+  results_dir: "results"
+  save_format: ["json", "csv"]

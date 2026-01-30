@@ -1,0 +1,27 @@
+# configs/benchmark_quick.yaml
+"""Quick benchmark configuration for testing."""
+
+model:
+  name: "Qwen/Qwen3-VL-4B-Instruct"
+  device: "cuda"
+  dtype: "bfloat16"
+  max_new_tokens: 128
+
+data:
+  video_dir: "video"
+  sample_size: 5  # Only 5 videos for quick test
+  frame_sampling: "uniform"
+  frames_per_video: 4  # Fewer frames for faster test
+  target_fps: 1
+
+benchmark:
+  warmup_runs: 1
+  num_runs: 5
+  batch_sizes: [1]
+  measure_memory: true
+  measure_gpu_util: true
+  save_individual_results: true
+
+output:
+  results_dir: "results"
+  save_format: ["json", "csv"]

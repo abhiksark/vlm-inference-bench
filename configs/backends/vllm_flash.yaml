@@ -1,0 +1,20 @@
+# configs/backends/vllm_flash.yaml
+# vLLM with Flash Attention 2 (default high-performance config)
+
+backend:
+  type: vllm
+  base_url: "http://localhost:8000"
+  model: "Qwen/Qwen3-VL-4B-Instruct"
+  dtype: bfloat16
+  max_new_tokens: 256
+  timeout: 120.0
+  options:
+    attention: flash_attn_2
+    gpu_memory_utilization: 0.85
+    tensor_parallel_size: 1
+
+# Server start command:
+# vllm serve Qwen/Qwen3-VL-4B-Instruct \
+#   --dtype bfloat16 \
+#   --gpu-memory-utilization 0.85 \
+#   --port 8000

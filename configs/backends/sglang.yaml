@@ -1,0 +1,21 @@
+# configs/backends/sglang.yaml
+# SGLang backend with RadixAttention
+
+backend:
+  type: sglang
+  base_url: "http://localhost:8004"
+  model: "Qwen/Qwen3-VL-4B-Instruct"
+  dtype: bfloat16
+  max_new_tokens: 256
+  timeout: 120.0
+  options:
+    mem_fraction: 0.85
+    tp_size: 1
+    schedule_policy: lpm
+
+# Server start command:
+# python -m sglang.launch_server \
+#   --model-path Qwen/Qwen3-VL-4B-Instruct \
+#   --dtype bfloat16 \
+#   --mem-fraction-static 0.85 \
+#   --port 8004

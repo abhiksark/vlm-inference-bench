@@ -1,0 +1,95 @@
+# docker/docker-compose.all.yaml
+# Master compose file to run all backends
+# NOTE: Running all at once requires multiple GPUs or sequential execution
+
+version: '3.8'
+
+x-gpu-config: &gpu-config
+  deploy:
+    resources:
+      reservations:
+        devices:
+          - driver: nvidia
+            count: 1
+            capabilities: [gpu]
+
+services:
+  vllm-flash:
+    build: ./vllm
+    container_name: vlm-bench-vllm
+    ports:
+      - "8000:8000"
+    environment:
+      - CUDA_VISIBLE_DEVICES=0
+      - MODEL_NAME=Qwen/Qwen3-VL-4B-Instruct
+      - DTYPE=bfloat16
+      - GPU_MEM_UTIL=0.85
+    volumes:
+      - hf_cache:/root/.cache/huggingface
+    shm_size: '16gb'
+    <<: *gpu-config
+
+  vllm-awq:
+    build: ./vllm-awq
+    container_name: vlm-bench-vllm-awq
+    ports:
+      - "8001:8001"
+    environment:
+      - CUDA_VISIBLE_DEVICES=0
+      - MODEL_NAME=Qwen/Qwen3-VL-4B-Instruct-AWQ
+      - QUANTIZATION=awq
+      - DTYPE=float16
+      - GPU_MEM_UTIL=0.85
+    volumes:
+      - hf_cache:/root/.cache/huggingface
+    shm_size: '16gb'
+    <<: *gpu-config
+
+  ollama:
+    build: ./ollama
+    container_name: vlm-bench-ollama
+    ports:
+      - "11434:11434"
+    environment:
+      - CUDA_VISIBLE_DEVICES=0
+      - OLLAMA_GPU_MEMORY=8192
+      - OLLAMA_HOST=0.0.0.0
+    volumes:
+      - ollama_data:/root/.ollama
+    <<: *gpu-config
+
+  tgi:
+    build: ./tgi
+    container_name: vlm-bench-tgi
+    ports:
+      - "8003:80"
+    environment:
+      - CUDA_VISIBLE_DEVICES=0
+      - MODEL_ID=Qwen/Qwen3-VL-4B-Instruct
+      - DTYPE=bfloat16
+      - MAX_TOTAL_TOKENS=4096
+      - MAX_INPUT_LENGTH=2048
+      - CUDA_MEMORY_FRACTION=0.85
+    volumes:
+      - hf_cache:/data
+    shm_size: '8gb'
+    <<: *gpu-config
+
+  sglang:
+    build: ./sglang
+    container_name: vlm-bench-sglang
+    ports:
+      - "8004:8004"
+    environment:
+      - CUDA_VISIBLE_DEVICES=0
+      - MODEL_PATH=Qwen/Qwen3-VL-4B-Instruct
+      - DTYPE=bfloat16
+      - MEM_FRACTION=0.85
+    volumes:
+      - hf_cache:/root/.cache/huggingface
+    shm_size: '16gb'
+    <<: *gpu-config
+
+volumes:
+  hf_cache:
+  ollama_data:

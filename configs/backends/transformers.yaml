@@ -1,0 +1,11 @@
+# configs/backends/transformers.yaml
+# Native Transformers/HuggingFace backend for local inference
+
+backend:
+  type: transformers
+  model: "Qwen/Qwen3-VL-4B-Instruct"
+  device: cuda
+  dtype: bfloat16
+  max_new_tokens: 256
+  options:
+    attn_implementation: flash_attention_2
