@@ -1,0 +1,28 @@
+# configs/4bit/benchmark_ollama_q4.yaml
+# Ollama with Q4_K_M GGUF quantization (most memory efficient)
+
+backend:
+  type: "ollama"
+  base_url: "http://localhost:28434"
+  model: "qwen3-vl:4b"
+  max_new_tokens: 256
+  timeout: 120
+
+data:
+  video_dir: "video"
+  sample_size: 5
+  frame_sampling: "uniform"
+  frames_per_video: 4
+  target_fps: 1
+
+benchmark:
+  warmup_runs: 1
+  num_runs: 5
+  batch_sizes: [1]
+  measure_memory: true
+  measure_gpu_util: true
+  save_individual_results: true
+
+output:
+  results_dir: "results/4bit"
+  save_format: ["json", "csv"]

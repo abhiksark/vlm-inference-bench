@@ -111,11 +111,23 @@ docker stop vlm-bench-vllm-awq && docker rm vlm-bench-vllm-awq
 
 ## Backends
 
-| Backend | Port | Config | Memory |
-|---------|------|--------|--------|
-| [vLLM](docker/vllm-awq/) | 28001 | [benchmark_vllm.yaml](configs/benchmark_vllm.yaml) | ~43 GB |
-| [SGLang](docker/sglang/) | 28004 | [benchmark_sglang.yaml](configs/benchmark_sglang.yaml) | ~40 GB |
-| [Ollama](docker/ollama/) | 28434 | [benchmark_ollama.yaml](configs/benchmark_ollama.yaml) | ~7 GB |
+### By Precision (Fair Comparisons)
+
+| Precision | vLLM | SGLang | Ollama | Config Dir |
+|-----------|------|--------|--------|------------|
+| **BFloat16** | [vllm-awq/](docker/vllm-awq/) :28001 | [sglang/](docker/sglang/) :28004 | F16 GGUF :28434 | [configs/bf16/](configs/bf16/) |
+| **FP8** | [vllm-fp8/](docker/vllm-fp8/) :28002 | [sglang-fp8/](docker/sglang-fp8/) :28005 | ❌ | [configs/fp8/](configs/fp8/) |
+| **8-bit** | [vllm-awq8/](docker/vllm-awq8/) :28003 | [sglang-awq8/](docker/sglang-awq8/) :28006 | Q8_0 GGUF | [configs/8bit/](configs/8bit/) |
+| **4-bit** | ❌ | ❌ | Q4_K_M GGUF | [configs/4bit/](configs/4bit/) |
+
+### Models Used
+
+| Precision | Model |
+|-----------|-------|
+| BFloat16 | [Qwen/Qwen3-VL-4B-Instruct](https://huggingface.co/Qwen/Qwen3-VL-4B-Instruct) |
+| FP8 | [Qwen/Qwen3-VL-4B-Instruct-FP8](https://huggingface.co/Qwen/Qwen3-VL-4B-Instruct-FP8) |
+| AWQ 8-bit | [cyankiwi/Qwen3-VL-4B-Instruct-AWQ-8bit](https://huggingface.co/cyankiwi/Qwen3-VL-4B-Instruct-AWQ-8bit) |
+| GGUF | [Qwen/Qwen3-VL-4B-Instruct-GGUF](https://huggingface.co/Qwen/Qwen3-VL-4B-Instruct-GGUF) |
 
 ### Thinking Mode
 
@@ -144,7 +156,11 @@ See [configs/backends/](configs/backends/) for backend-specific options.
 
 ## Results
 
-Output: `results/*.json` and `results/*.csv`
+Output organized by precision:
+- `results/bf16/` - BFloat16 comparisons
+- `results/fp8/` - FP8 comparisons
+- `results/8bit/` - 8-bit comparisons
+- `results/4bit/` - 4-bit (Ollama only)
 
 ### Metrics
 

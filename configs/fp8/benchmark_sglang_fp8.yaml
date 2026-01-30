@@ -1,0 +1,28 @@
+# configs/fp8/benchmark_sglang_fp8.yaml
+# SGLang with FP8 quantization (W8A16 on Ampere)
+
+backend:
+  type: "sglang"
+  base_url: "http://localhost:28005"
+  model: "Qwen/Qwen3-VL-4B-Instruct-FP8"
+  max_new_tokens: 256
+  timeout: 120
+
+data:
+  video_dir: "video"
+  sample_size: 5
+  frame_sampling: "uniform"
+  frames_per_video: 4
+  target_fps: 1
+
+benchmark:
+  warmup_runs: 1
+  num_runs: 5
+  batch_sizes: [1]
+  measure_memory: true
+  measure_gpu_util: true
+  save_individual_results: true
+
+output:
+  results_dir: "results/fp8"
+  save_format: ["json", "csv"]

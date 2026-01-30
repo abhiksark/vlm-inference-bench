@@ -1,0 +1,28 @@
+# configs/bf16/benchmark_sglang_bf16.yaml
+# SGLang with bfloat16 precision
+
+backend:
+  type: "sglang"
+  base_url: "http://localhost:28004"
+  model: "Qwen/Qwen3-VL-4B-Instruct"
+  max_new_tokens: 256
+  timeout: 120
+
+data:
+  video_dir: "video"
+  sample_size: 5
+  frame_sampling: "uniform"
+  frames_per_video: 4
+  target_fps: 1
+
+benchmark:
+  warmup_runs: 1
+  num_runs: 5
+  batch_sizes: [1]
+  measure_memory: true
+  measure_gpu_util: true
+  save_individual_results: true
+
+output:
+  results_dir: "results/bf16"
+  save_format: ["json", "csv"]
