@@ -5,11 +5,11 @@ services:
   ollama:
     build: .
     ports:
-      - "${PORT:-11434}:11434"
+      - "${PORT:-28434}:28434"
     environment:
       - CUDA_VISIBLE_DEVICES=${CUDA_DEVICE:-0}
       - OLLAMA_GPU_MEMORY=${GPU_MEMORY_MB:-8192}
-      - OLLAMA_HOST=0.0.0.0
+      - OLLAMA_HOST=0.0.0.0:28434
     volumes:
       - ollama_data:/root/.ollama
     deploy:

@@ -70,7 +70,7 @@ pip install -r requirements.txt
 ```bash
 # vLLM
 docker build -t docker-vllm-awq -f docker/vllm-awq/Dockerfile docker/vllm-awq/
-docker run -d --gpus all --name vlm-bench-vllm-awq -p 8001:8001 \
+docker run -d --gpus all --name vlm-bench-vllm-awq -p 28001:28001 \
     -v ~/.cache/huggingface:/root/.cache/huggingface docker-vllm-awq
 
 python src/benchmark.py --config configs/benchmark_vllm.yaml
@@ -113,9 +113,9 @@ docker stop vlm-bench-vllm-awq && docker rm vlm-bench-vllm-awq
 
 | Backend | Port | Config | Memory |
 |---------|------|--------|--------|
-| [vLLM](docker/vllm-awq/) | 8001 | [benchmark_vllm.yaml](configs/benchmark_vllm.yaml) | ~43 GB |
-| [SGLang](docker/sglang/) | 8004 | [benchmark_sglang.yaml](configs/benchmark_sglang.yaml) | ~40 GB |
-| [Ollama](docker/ollama/) | 11434 | [benchmark_ollama.yaml](configs/benchmark_ollama.yaml) | ~7 GB |
+| [vLLM](docker/vllm-awq/) | 28001 | [benchmark_vllm.yaml](configs/benchmark_vllm.yaml) | ~43 GB |
+| [SGLang](docker/sglang/) | 28004 | [benchmark_sglang.yaml](configs/benchmark_sglang.yaml) | ~40 GB |
+| [Ollama](docker/ollama/) | 28434 | [benchmark_ollama.yaml](configs/benchmark_ollama.yaml) | ~7 GB |
 
 ### Thinking Mode
 
@@ -131,7 +131,7 @@ Example: [configs/benchmark_vllm.yaml](configs/benchmark_vllm.yaml)
 ```yaml
 backend:
   type: vllm
-  base_url: http://localhost:8001
+  base_url: http://localhost:28001
   model: Qwen/Qwen3-VL-4B-Instruct
 
 benchmark:

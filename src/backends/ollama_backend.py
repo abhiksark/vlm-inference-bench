@@ -24,10 +24,10 @@ class OllamaBackend(VLMBackend):
         """Initialize Ollama backend.
 
         Args:
-            config: Backend configuration with base_url (default: localhost:11434).
+            config: Backend configuration with base_url (default: localhost:28434).
         """
         super().__init__(config)
-        self.base_url = config.base_url or "http://localhost:11434"
+        self.base_url = config.base_url or "http://localhost:28434"
         self.generate_endpoint = f"{self.base_url}/api/generate"
         self.chat_endpoint = f"{self.base_url}/api/chat"
         self.tags_endpoint = f"{self.base_url}/api/tags"

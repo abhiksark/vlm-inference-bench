@@ -3,10 +3,12 @@
 
 FROM ollama/ollama:latest
 
-EXPOSE 11434
+EXPOSE 28434
+
+ENV OLLAMA_HOST=0.0.0.0:28434
 
 HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
-    CMD curl -f http://localhost:11434/api/tags || exit 1
+    CMD curl -f http://localhost:28434/api/tags || exit 1
 
 # Model will be pulled at runtime:
 # docker exec -it <container> ollama pull qwen3-vl:4b

@@ -5,7 +5,7 @@ services:
   vllm-awq:
     build: .
     ports:
-      - "${PORT:-8001}:8001"
+      - "${PORT:-28001}:28001"
     environment:
       - CUDA_VISIBLE_DEVICES=${CUDA_DEVICE:-0}
       - MODEL_NAME=${MODEL_NAME:-Qwen/Qwen3-VL-4B-Instruct-AWQ}

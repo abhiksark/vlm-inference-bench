@@ -3,7 +3,7 @@
 
 backend:
   type: "sglang"
-  base_url: "http://localhost:8004"
+  base_url: "http://localhost:28004"
   model: "Qwen/Qwen3-VL-4B-Instruct"
   max_new_tokens: 256
   timeout: 120

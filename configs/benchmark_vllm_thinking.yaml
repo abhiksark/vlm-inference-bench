@@ -3,7 +3,7 @@
 
 backend:
   type: "vllm"
-  base_url: "http://localhost:8001"
+  base_url: "http://localhost:28001"
   model: "Qwen/Qwen3-VL-4B-Instruct"
   max_new_tokens: 512
   timeout: 180

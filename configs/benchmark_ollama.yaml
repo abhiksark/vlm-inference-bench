@@ -3,7 +3,7 @@
 
 backend:
   type: "ollama"
-  base_url: "http://localhost:11434"
+  base_url: "http://localhost:28434"
   model: "qwen3-vl:4b"
   max_new_tokens: 256
   timeout: 120
